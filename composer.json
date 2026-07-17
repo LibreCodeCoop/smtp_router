@@ -1,0 +1,22 @@
+{
+	"name": "librecode/smtp_router",
+	"description": "Per-company SMTP routing for Nextcloud",
+	"type": "project",
+	"license": "AGPL",
+	"authors": [
+		{
+			"name": "LibreCode"
+		}
+	],
+	"config": {
+		"autoloader-suffix": "smtp_router",
+		"optimize-autoloader": true,
+		"classmap-authoritative": true,
+		"sort-packages": true
+	},
+	"autoload": {
+		"psr-4": {
+			"OCA\\SmtpRouter\\": "lib/"
+		}
+	}
+}
