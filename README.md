@@ -12,6 +12,9 @@ occ app:enable smtp_router
 
 If you deploy apps from git, keep the repository checked out beside your other custom apps and make sure Nextcloud can load it from the apps directory.
 
+An admin section named `SMTP Router` will appear in the Nextcloud settings area.
+Use it to pick a group, open the SMTP modal, and save the per-company profile.
+
 ## Goal
 
 - Keep `custom_domain` focused on visual customization and trusted domains.
@@ -115,6 +118,17 @@ Read it back with:
 ```bash
 occ smtp-router:route:get
 ```
+
+## Graphical interface
+
+The admin UI lets you:
+
+- choose a group or the default fallback from a dropdown
+- open a modal to edit SMTP host, port, encryption, login and password
+- keep one route per company group
+- remove a company route without touching the others
+
+The default route is kept as the fallback for cron jobs and generic system mail.
 
 ## Mailcow
 
