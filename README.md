@@ -123,7 +123,7 @@ occ smtp-router:route:get
 
 The admin UI lets you:
 
-- choose a group or the default fallback from a dropdown
+- search groups by name or id and choose the target from a live list
 - open a modal to edit SMTP host, port, encryption, login and password
 - keep one route per company group
 - remove a company route without touching the others

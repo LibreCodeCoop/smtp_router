@@ -1,17 +1,17 @@
 <?php
 /** @var array $_ */
-$groups = $_['groups'] ?? [];
 $routes = $_['routes'] ?? [];
 $groupNames = $_['groupNames'] ?? [];
 $requesttoken = $_['requesttoken'] ?? '';
 $adminPageUrl = $_['adminPageUrl'] ?? '';
+$searchUrl = $_['searchUrl'] ?? '';
 $defaultRoute = $routes['default'] ?? [];
 $companyRoutes = array_filter($routes, static fn ($key): bool => $key !== 'default', ARRAY_FILTER_USE_KEY);
 $currentMsg = (string)($_GET['msg'] ?? '');
 $currentType = (string)($_GET['type'] ?? 'info');
 ?>
 
-<div class="section smtp-router-section" id="smtp_router_settings" data-smtp-router-routes="<?php p(json_encode($routes, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_TAG)); ?>">
+<div class="section smtp-router-section" id="smtp_router_settings" data-smtp-router-routes="<?php p(json_encode($routes, JSON_HEX_APOS | JSON_HEX_AMP | JSON_HEX_QUOT | JSON_HEX_TAG)); ?>" data-smtp-router-search-url="<?php p($searchUrl); ?>">
 	<h2>SMTP Router</h2>
 	<p class="settings-hint">
 		Configure one SMTP profile per company group. The selected group can use a dedicated sender, host and password.
@@ -24,18 +24,18 @@ $currentType = (string)($_GET['type'] ?? 'info');
 	<?php endif; ?>
 
 	<div class="smtp-router-toolbar">
-		<label for="smtp-router-group-select">Group or company</label>
-		<select id="smtp-router-group-select">
+		<label for="smtp-router-group-search">Search group</label>
+		<input type="search" id="smtp-router-group-search" placeholder="Type a group name or id">
+		<label for="smtp-router-group-select">Matching groups</label>
+		<select id="smtp-router-group-select" size="6">
 			<option value="default">Default fallback</option>
-			<?php foreach ($groups as $group): ?>
-				<option value="<?php p($group['id']); ?>"><?php p($group['displayName'] . ' (' . $group['id'] . ')'); ?></option>
-			<?php endforeach; ?>
 		</select>
 		<button type="button" class="button primary" id="smtp-router-new-button">Configure SMTP</button>
 		<?php if ($adminPageUrl !== ''): ?>
 			<a class="button" href="<?php p($adminPageUrl); ?>" target="_blank" rel="noreferrer noopener">Open full page</a>
 		<?php endif; ?>
 	</div>
+	<p class="settings-hint">Search by group id or display name. The list updates as you type.</p>
 
 	<h3>Default route</h3>
 	<div class="smtp-router-card">

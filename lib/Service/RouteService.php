@@ -94,9 +94,12 @@ class RouteService {
 	/**
 	 * @return list<array{id: string, displayName: string}>
 	 */
-	public function listGroups(): array {
+	public function searchGroups(string $query, int $limit = 20): array {
+		$query = trim($query);
+		$limit = max(1, $limit);
+
 		$groups = [];
-		foreach ($this->groupManager->search('', null, 0) as $group) {
+		foreach ($this->groupManager->search($query, $limit, 0) as $group) {
 			if (!$group instanceof IGroup) {
 				continue;
 			}
@@ -109,6 +112,20 @@ class RouteService {
 
 		usort($groups, static fn (array $left, array $right): int => strnatcasecmp($left['displayName'], $right['displayName']));
 		return $groups;
+	}
+
+	/**
+	 * @param list<string> $groupIds
+	 * @return array<string, string>
+	 */
+	public function getGroupDisplayNames(array $groupIds): array {
+		$names = [];
+		foreach ($groupIds as $groupId) {
+			$group = $this->groupManager->get($groupId);
+			$names[$groupId] = $group?->getDisplayName() ?? $groupId;
+		}
+
+		return $names;
 	}
 
 	/**

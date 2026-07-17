@@ -36,18 +36,14 @@ class Admin implements ISettings {
 	 */
 	private function buildViewData(): array {
 		$routes = $this->routeService->getRoutes();
-		$groups = $this->routeService->listGroups();
-		$groupNames = [];
-		foreach ($groups as $group) {
-			$groupNames[$group['id']] = $group['displayName'];
-		}
+		$groupNames = $this->routeService->getGroupDisplayNames(array_keys($routes));
 
 		return [
-			'groups' => $groups,
 			'routes' => $routes,
 			'groupNames' => $groupNames,
 			'requesttoken' => \OC::$server->getCsrfTokenManager()->getToken()->getEncryptedValue(),
 			'adminPageUrl' => \OC::$server->getURLGenerator()->linkToRoute(Application::APP_ID . '.admin.index'),
+			'searchUrl' => \OC::$server->getURLGenerator()->linkToRoute(Application::APP_ID . '.admin.searchGroups'),
 		];
 	}
 }

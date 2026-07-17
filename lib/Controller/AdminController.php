@@ -6,8 +6,9 @@ namespace OCA\SmtpRouter\Controller;
 
 use OCA\SmtpRouter\AppInfo\Application;
 use OCA\SmtpRouter\Service\RouteService;
-use OCP\AppFramework\Attribute\AdminRequired;
 use OCP\AppFramework\Controller;
+use OCP\AppFramework\Http\DataResponse;
+use OCP\AppFramework\Http\Attribute\AdminRequired;
 use OCP\AppFramework\Http\RedirectResponse;
 use OCP\AppFramework\Http\TemplateResponse;
 use OCP\IRequest;
@@ -31,6 +32,15 @@ class AdminController extends Controller {
 			'admin',
 			$this->buildViewData(),
 		);
+	}
+
+	#[AdminRequired]
+	public function searchGroups(): DataResponse {
+		$query = (string) $this->request->getParam('query', '');
+
+		return new DataResponse([
+			'groups' => $this->routeService->searchGroups($query, 25),
+		]);
 	}
 
 	#[AdminRequired]
@@ -96,18 +106,14 @@ class AdminController extends Controller {
 	 */
 	private function buildViewData(): array {
 		$routes = $this->routeService->getRoutes();
-		$groups = $this->routeService->listGroups();
-		$groupNames = [];
-		foreach ($groups as $group) {
-			$groupNames[$group['id']] = $group['displayName'];
-		}
+		$groupNames = $this->routeService->getGroupDisplayNames(array_keys($routes));
 
 		return [
-			'groups' => $groups,
 			'routes' => $routes,
 			'groupNames' => $groupNames,
 			'requesttoken' => \OC::$server->getCsrfTokenManager()->getToken()->getEncryptedValue(),
 			'adminPageUrl' => \OC::$server->getURLGenerator()->linkToRoute(Application::APP_ID . '.admin.index'),
+			'searchUrl' => \OC::$server->getURLGenerator()->linkToRoute(Application::APP_ID . '.admin.searchGroups'),
 		];
 	}
 
