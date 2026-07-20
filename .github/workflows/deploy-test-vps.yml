@@ -11,6 +11,7 @@ permissions:
 
 env:
   VPS_APP_PATH: ${{ vars.VPS_APP_PATH || '/var/www/nextcloud/custom_apps/smtp_router' }}
+  VPS_PORT: ${{ vars.VPS_PORT || '22' }}
 
 jobs:
   deploy:
@@ -34,7 +35,7 @@ jobs:
 
       - name: Create remote app directory
         run: |
-          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+          ssh -p "$VPS_PORT" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
             "sudo -n mkdir -p '$VPS_APP_PATH'"
 
       - name: Sync app files
@@ -43,10 +44,11 @@ jobs:
             --exclude='.git/' \
             --exclude='.github/' \
             --rsync-path="sudo -n rsync" \
+            -e "ssh -p $VPS_PORT" \
             ./ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:$VPS_APP_PATH/"
 
       - name: Run optional Nextcloud command
         if: ${{ vars.VPS_OCC_COMMAND != '' }}
         run: |
-          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+          ssh -p "$VPS_PORT" "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
             "sudo -n ${{ vars.VPS_OCC_COMMAND }}"

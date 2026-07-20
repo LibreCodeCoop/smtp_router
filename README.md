@@ -25,11 +25,12 @@ Configure these repository secrets:
 - `VPS_HOST`: VPS hostname or IP address
 - `VPS_USER`: regular SSH user with passwordless `sudo` permission for the deployment commands
 - `VPS_SSH_KEY`: private SSH key for that user
-- `VPS_KNOWN_HOSTS`: output of `ssh-keyscan -H <host>` for the VPS
+- `VPS_KNOWN_HOSTS`: output of `ssh-keyscan -p <port> -H <host>` for the VPS
 
 Configure these repository variables:
 
 - `VPS_APP_PATH`: optional remote app path; defaults to `/var/www/nextcloud/custom_apps/smtp_router`
+- `VPS_PORT`: optional SSH port; defaults to `22`
 - `VPS_OCC_COMMAND`: optional command to run with `sudo -n` after syncing, for example `cd /var/www/nextcloud && php occ app:enable smtp_router`
 
 Every push to `test-vps` syncs the app files over SSH. The SSH user must be able
