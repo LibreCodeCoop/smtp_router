@@ -6,16 +6,12 @@ namespace OCA\SmtpRouter\Config;
 
 use OCA\SmtpRouter\Service\RouteResolver;
 
-class RouteConfig extends \OC\Config {
+class RouteConfig extends \OC\AllConfig {
 	public function __construct(
-		string $configDir,
+		\OC\SystemConfig $systemConfig,
 		private RouteResolver $routeResolver,
 	) {
-		parent::__construct($configDir);
-	}
-
-	public function getValue($key, $default = null) {
-		return $this->getRoutedValue($key, fn () => parent::getValue($key, $default), $default);
+		parent::__construct($systemConfig);
 	}
 
 	public function getSystemValue($key, $default = null) {
@@ -38,7 +34,7 @@ class RouteConfig extends \OC\Config {
 	}
 
 	public function getSystemValueArray($key, $default = []): array {
-		$value = $this->getRoutedValue($key, fn () => parent::getSystemValueArray($key, $default), $default);
+		$value = $this->getRoutedValue($key, fn () => parent::getSystemValue($key, $default), $default);
 		return is_array($value) ? $value : $default;
 	}
 

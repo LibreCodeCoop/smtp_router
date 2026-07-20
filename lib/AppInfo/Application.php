@@ -38,7 +38,7 @@ class Application extends App implements IBootstrap {
 
 		$context->registerService(\OCP\IConfig::class, function ($c) {
 			return new RouteConfig(
-				\OC::$configDir,
+				$c->get(\OC\SystemConfig::class),
 				$c->get(RouteResolver::class),
 			);
 		});
