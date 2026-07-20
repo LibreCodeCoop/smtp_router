@@ -35,17 +35,18 @@ jobs:
       - name: Create remote app directory
         run: |
           ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "mkdir -p '$VPS_APP_PATH'"
+            "sudo -n mkdir -p '$VPS_APP_PATH'"
 
       - name: Sync app files
         run: |
           rsync --archive --compress --delete \
             --exclude='.git/' \
             --exclude='.github/' \
+            --rsync-path="sudo -n rsync" \
             ./ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:$VPS_APP_PATH/"
 
       - name: Run optional Nextcloud command
         if: ${{ vars.VPS_OCC_COMMAND != '' }}
         run: |
           ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
-            "${{ vars.VPS_OCC_COMMAND }}"
+            "sudo -n ${{ vars.VPS_OCC_COMMAND }}"

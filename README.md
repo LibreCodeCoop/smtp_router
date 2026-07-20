@@ -23,16 +23,18 @@ It can also be started manually from the Actions tab with `workflow_dispatch`.
 Configure these repository secrets:
 
 - `VPS_HOST`: VPS hostname or IP address
-- `VPS_USER`: SSH user with write access to the Nextcloud custom apps directory
+- `VPS_USER`: regular SSH user with passwordless `sudo` permission for the deployment commands
 - `VPS_SSH_KEY`: private SSH key for that user
 - `VPS_KNOWN_HOSTS`: output of `ssh-keyscan -H <host>` for the VPS
 
 Configure these repository variables:
 
 - `VPS_APP_PATH`: optional remote app path; defaults to `/var/www/nextcloud/custom_apps/smtp_router`
-- `VPS_OCC_COMMAND`: optional command to run after syncing, for example `cd /var/www/nextcloud && php occ app:enable smtp_router`
+- `VPS_OCC_COMMAND`: optional command to run with `sudo -n` after syncing, for example `cd /var/www/nextcloud && php occ app:enable smtp_router`
 
-Every push to `test-vps` syncs the app files over SSH. Keep `VPS_OCC_COMMAND`
+Every push to `test-vps` syncs the app files over SSH. The SSH user must be able
+to run `sudo` without an interactive password prompt for `mkdir`, `rsync` and the
+optional `VPS_OCC_COMMAND`. Keep `VPS_OCC_COMMAND`
 appropriate for the Nextcloud installation on the test VPS; Docker installations
 will usually need a `docker compose exec` command instead of a host-side `php occ`.
 
