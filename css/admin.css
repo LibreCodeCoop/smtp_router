@@ -93,6 +93,15 @@
 	padding: 24px;
 }
 
+/* Nextcloud's global styles can override the browser's default closed-dialog state. */
+.smtp-router-dialog:not([open]) {
+	display: none;
+}
+
+.smtp-router-dialog[open] {
+	display: block;
+}
+
 .smtp-router-dialog::backdrop {
 	background: rgba(0, 0, 0, 0.45);
 }
