@@ -24,7 +24,7 @@ Configure these repository secrets:
 
 - `VPS_HOST`: VPS hostname or IP address
 - `VPS_USER`: regular SSH user with passwordless `sudo` permission for the deployment commands
-- `VPS_SSH_KEY`: private SSH key for that user
+- `VPS_SSH_KEY`: dedicated private SSH key for that user, without a passphrase
 - `VPS_KNOWN_HOSTS`: output of `ssh-keyscan -p <port> -H <host>` for the VPS
 
 Configure these repository variables:
@@ -38,6 +38,17 @@ to run `sudo` without an interactive password prompt for `mkdir`, `rsync` and th
 optional `VPS_OCC_COMMAND`. Keep `VPS_OCC_COMMAND`
 appropriate for the Nextcloud installation on the test VPS; Docker installations
 will usually need a `docker compose exec` command instead of a host-side `php occ`.
+
+The deployment key must not require interactive passphrase input. Generate a
+dedicated key for the workflow and leave the passphrase empty when prompted:
+
+```bash
+ssh-keygen -t ed25519 -f ./smtp-router-deploy
+```
+
+Add `smtp-router-deploy.pub` to the regular user's `~/.ssh/authorized_keys` on
+the VPS and save the contents of `smtp-router-deploy` as the `VPS_SSH_KEY`
+repository secret. Do not reuse a personal SSH key.
 
 ## Goal
 
