@@ -8,6 +8,7 @@
 	<licence>agpl</licence>
 	<author mail="contact@librecode.coop" homepage="https://librecode.coop">LibreCode</author>
 	<namespace>SmtpRouter</namespace>
+	<bootstrap>OCA\SmtpRouter\AppInfo\Application</bootstrap>
 	<types>
 		<prelogin/>
 	</types>
@@ -16,6 +17,10 @@
 	</documentation>
 	<category>tools</category>
 	<category>organization</category>
+	<settings>
+		<admin>OCA\SmtpRouter\Settings\Admin</admin>
+		<admin-section>OCA\SmtpRouter\Settings\AdminSection</admin-section>
+	</settings>
 	<dependencies>
 		<nextcloud min-version="29" max-version="33"/>
 	</dependencies>
