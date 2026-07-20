@@ -1,0 +1,51 @@
+name: Deploy test VPS
+
+on:
+  push:
+    branches:
+      - test-vps
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+env:
+  VPS_APP_PATH: ${{ vars.VPS_APP_PATH || '/var/www/nextcloud/custom_apps/smtp_router' }}
+
+jobs:
+  deploy:
+    name: Deploy SMTP Router to test VPS
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Configure SSH
+        uses: webfactory/ssh-agent@v0.9.0
+        with:
+          ssh-private-key: ${{ secrets.VPS_SSH_KEY }}
+
+      - name: Add VPS host key
+        run: |
+          install -d -m 700 "$HOME/.ssh"
+          printf '%s\n' '${{ secrets.VPS_KNOWN_HOSTS }}' > "$HOME/.ssh/known_hosts"
+          chmod 600 "$HOME/.ssh/known_hosts"
+
+      - name: Create remote app directory
+        run: |
+          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "mkdir -p '$VPS_APP_PATH'"
+
+      - name: Sync app files
+        run: |
+          rsync --archive --compress --delete \
+            --exclude='.git/' \
+            --exclude='.github/' \
+            ./ "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}:$VPS_APP_PATH/"
+
+      - name: Run optional Nextcloud command
+        if: ${{ vars.VPS_OCC_COMMAND != '' }}
+        run: |
+          ssh "${{ secrets.VPS_USER }}@${{ secrets.VPS_HOST }}" \
+            "${{ vars.VPS_OCC_COMMAND }}"
