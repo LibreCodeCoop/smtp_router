@@ -31,6 +31,7 @@ class RouteService {
 	public function __construct(
 		private AppConfig $appConfig,
 		private IGroupManager $groupManager,
+		private \OC\SystemConfig $systemConfig,
 	) {
 	}
 
@@ -38,6 +39,41 @@ class RouteService {
 	 * @return array<string, array<string, mixed>>
 	 */
 	public function getRoutes(): array {
+		$routes = $this->getStoredRoutes();
+		if (!isset($routes['default'])) {
+			$routes['default'] = $this->getGlobalDefaultRoute();
+		}
+
+		return $routes;
+	}
+
+	/**
+	 * @return array<string, mixed>
+	 */
+	public function getRoute(string $routeKey): array {
+		$routes = $this->getRoutes();
+		return $routes[$routeKey] ?? [];
+	}
+
+	/**
+	 * @param array<string, mixed> $route
+	 */
+	public function saveRoute(string $routeKey, array $route): void {
+		$routes = $this->getStoredRoutes();
+		$routes[$routeKey] = $this->normalizeRoute($route);
+		$this->persistRoutes($routes);
+	}
+
+	public function deleteRoute(string $routeKey): void {
+		$routes = $this->getStoredRoutes();
+		unset($routes[$routeKey]);
+		$this->persistRoutes($routes);
+	}
+
+	/**
+	 * @return array<string, array<string, mixed>>
+	 */
+	private function getStoredRoutes(): array {
 		$raw = $this->appConfig->getValue(self::APP_ID, 'routes', '');
 		if (!is_string($raw) || trim($raw) === '') {
 			return [];
@@ -65,26 +101,24 @@ class RouteService {
 	}
 
 	/**
+	 * Use Nextcloud's global mail settings as the implicit default route.
+	 *
 	 * @return array<string, mixed>
 	 */
-	public function getRoute(string $routeKey): array {
-		$routes = $this->getRoutes();
-		return $routes[$routeKey] ?? [];
-	}
-
-	/**
-	 * @param array<string, mixed> $route
-	 */
-	public function saveRoute(string $routeKey, array $route): void {
-		$routes = $this->getRoutes();
-		$routes[$routeKey] = $this->normalizeRoute($route);
-		$this->persistRoutes($routes);
-	}
-
-	public function deleteRoute(string $routeKey): void {
-		$routes = $this->getRoutes();
-		unset($routes[$routeKey]);
-		$this->persistRoutes($routes);
+	private function getGlobalDefaultRoute(): array {
+		return $this->normalizeRoute([
+			'mail_smtpmode' => $this->systemConfig->getValue('mail_smtpmode', 'smtp'),
+			'mail_smtphost' => $this->systemConfig->getValue('mail_smtphost', ''),
+			'mail_smtpport' => $this->systemConfig->getValue('mail_smtpport', '587'),
+			'mail_smtpsecure' => $this->systemConfig->getValue('mail_smtpsecure', ''),
+			'mail_smtpauth' => $this->systemConfig->getValue('mail_smtpauth', false),
+			'mail_smtpname' => $this->systemConfig->getValue('mail_smtpname', ''),
+			'mail_smtppassword' => $this->systemConfig->getValue('mail_smtppassword', ''),
+			'mail_domain' => $this->systemConfig->getValue('mail_domain', ''),
+			'mail_from_address' => $this->systemConfig->getValue('mail_from_address', ''),
+			'mail_sendmailmode' => $this->systemConfig->getValue('mail_sendmailmode', 'smtp'),
+			'mail_smtpauthtype' => $this->systemConfig->getValue('mail_smtpauthtype', 'LOGIN'),
+		]);
 	}
 
 	public function isValidRouteKey(string $routeKey): bool {

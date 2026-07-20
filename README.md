@@ -164,6 +164,8 @@ The admin UI lets you:
 - remove a company route without touching the others
 
 The default route is kept as the fallback for cron jobs and generic system mail.
+When no `default` route is explicitly saved, the app displays and uses the
+global mail settings configured in Nextcloud's `Server settings > Mail server`.
 
 ## Mailcow
 

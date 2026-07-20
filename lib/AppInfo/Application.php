@@ -24,6 +24,7 @@ class Application extends App implements IBootstrap {
 			return new RouteService(
 				\OC::$server->get(\OC\AppConfig::class),
 				$c->get(\OCP\IGroupManager::class),
+				$c->get(\OC\SystemConfig::class),
 			);
 		});
 
