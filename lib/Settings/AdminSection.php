@@ -16,7 +16,7 @@ class AdminSection implements IIconSection {
 	}
 
 	public function getIcon(): string {
-		return $this->urlGenerator->imagePath('core', 'places/settings.svg');
+		return $this->urlGenerator->imagePath('settings', 'admin.svg');
 	}
 
 	public function getID(): string {
